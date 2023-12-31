@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Code Editor</title>
+    <script src="https://ace.c9.io/build/src-noconflict/ace.js"></script>
+  <script src="https://ace.c9.io/build/src-noconflict/ext-language_tools.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js" integrity="sha512-3IAnU1gbNvyQjyINQ6SgaX74l0kTnr2u5fgz8xtIem2HFjsZ/yYEP/pSXBpBNU21/mh+N/qBy24kNSFThT9dzQ==" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="https://kit.fontawesome.com/bfb4213bb3.js" crossorigin="anonymous"></script>
+    <style>
+    body{
+      color: black;
+    }
+    #header{
+      position: fixed;
+      top: 0%;
+      left: 0%;
+      display: flex;
+      background-color: #333333;
+      right: 0%;
+      z-index: 10;
+      height: 45px;
+      align-items: center;
+    }
+    #editor {
+      width: 100%;
+      top: 45px;
+      z-index: 1;
+      overflow: scroll;
+      bottom: 58px;
+      font-size: 25px;
+      left: 0%;
+      display: block;
+      position: fixed;
+    }
+    #preview {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      top: 30px;
+      right: 0%;
+      display: none;
+      border: none;
+      color: black;
+    }
+    .allBtn{
+        position: relative;
+        width: 300px;
+        padding: 15px;
+        background-color: rgb(255 255 255 / 0.3);
+        border: none;
+        text-align: left;
+        color: black;
+        font-weight: bold;
+        letter-spacing: 1.3px;
+        font-size: 17px;
+        text-shadow: black -1px 0, black 1px 0;
+        margin-top: 5px;
+        backdrop-filter: blur(4x);
+    }
+    #runBtn{
+      position: fixed;
+      right: 3%;
+      bottom: 5%;
+      border-radius: 50%;
+      width: 70px;
+      align-items: center;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      padding: 10px;
+      height: 70px;
+      font-size: 30px;
+      z-index: 2;
+      border: 1px solid gold;
+      color: white;
+      font-weight: bold;
+      background-color: gold;
+    }
+    #runBtn:active{
+      border: 1px solid black;
+    }
+    #back{
+      position: fixed;
+      top: 0px;
+      left: 0px;
+      color: white;
+      border-radius: 50%;
+      height: 35px;
+      width: 35px;
+      border: none;
+      background-color: transparent;
+      display: block;
+      font-size: 30px;
+    }
+    #header2{
+      background-color: #232323;
+      position: fixed;
+      top: 0%;
+      left: 0%;
+      right: 0%;
+      display: none;
+      z-index: 1;
+      height: 30px;
+    }
+    #flex{
+        position: absolute;
+        right: 27%;
+        top: 7px;
+        font-size: 25px;
+    }
+    #removeIcon{
+        position: absolute;
+        right: 27%;
+        top: 7px;
+        font-size: 25px;
+    }
+    #aye{
+        position: absolute;
+        right: 27%;
+        top: 7px;
+        font-size: 25px;
+    }
+    #aye-slash{
+        position: absolute;
+        right: 27%;
+        top: 7px;
+        font-size: 25px;
+    }
+    #cog{
+        position: absolute;
+        right: 27%;
+        top: 7px;
+        font-size: 25px;
+    }
+    #showSettings{
+        position: absolute;
+        width: 230px;
+        z-index: 1;
+        height: 500px;
+        display: none;
+        top: 43px;
+        overflow: hidden;
+        background-color: #00000004;
+        text-align: left;
+        border: 1px solid black;
+        border-radius: 5px;
+        backdrop-filter: blur(4px);
+    }
+    #should{
+        border: none;
+        width: 47px;
+        height: 45px;
+        border-radius: 50%;
+        color: white;
+        background-color: #333333;
+        font-size: 40px;
+        text-align: center;
+        align-items: center;
+        justify-content: ccenter;
+    }
+    .allBtn:active{
+        background-image: linear-gradient(to bottom, #ffa3327c, #ff32327c);
+    }
+    #upload{
+        position: absolute;
+    }
+    #fileInput{
+        background-color: transparent;
+        overflow: hidden;
+        width: 500px;
+        position: relative;
+        left: -70%;
+        color: transparent;
+        text-shadow: none;
+    }
+    #theme-select{
+        width: 227px;
+        outline: none;
+        border: none;
+    }
+    .allBtn{
+        border: none;
+        color: black;
+    }
+    #otherSettings{
+        background-color: #333333;
+        position: fixed;
+        top: 0%;
+        left: 0%;
+        right: 0%;
+        z-index: 15;
+        bottom: 0%;
+        display: none;
+    }
+    #showFonts{
+        width: 100%;
+        height: 60px;
+        background-color: transparent;
+        color: white;
+        margin-top: 10px;
+        border: none;
+        font-size: 20px;
+        padding: 15;
+        text-align: left;
+        border-radius: 3px;
+    }
+    #custom{
+        width: 100%;
+        height: 60px;
+        background-color: transparent;
+        color: white;
+        margin-top: 10px;
+        border: none;
+        font-size: 20px;
+        padding: 15;
+        text-align: left;
+        border-radius: 3px;
+    }
+    #showFonts:active,
+    #showStyle:active,
+    #custom:active{
+        background-color: #555555;
+    }
+    #display2,
+    #mc,
+    #cz{
+        color: gray;
+        text-align: left;
+        font-size: 17px;
+    }
+    #zoom{
+        width: 500px;
+        height: 200px;
+        background-color: #434342;
+        color: royalblue;
+        border-radius: 4px;
+        z-index: 15;
+    }
+    .zoom2{
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+    }
+    #display{
+        text-align: left;
+        font-size: 25px;
+        padding: 10px;
+    }
+    #types{
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        font-weight: bold;
+        height: 150px;
+    }
+    #range{
+        width: 90%;
+    }
+    #none{
+        font-size: 30px;
+    }
+    #me{
+        position: fixed;
+        background-color: #00000094;
+        top: 0%;
+        left: 0%;
+        right: 0%;
+        display: none;
+        bottom: 0%;
+    }
+    #backbtn3{
+        position: fixed;
+        background-color: transparent;
+        top: 0%;
+        left: 0%;
+        right: 0%;
+        border: none;
+        z-index: 14;
+        bottom: 0%;
+        color: transparent;
+    }
+    #backbtn2{
+        background-color: #333333;
+        border: none;
+        font-size: 25px;
+        color: #f3f3f3;
+    }
+    #edit{
+        position: fixed;
+        top: 0%;
+        width: 100%;
+        left: 0%
+        right: 0%;
+        bottom: 0%;
+        text-align: center;
+        display: none;
+        background-color: rgb(255 255 255 / 0.3);
+        backdrop-filter: blur(4px);
+    }
+    #mm{
+        height: 40px;
+        border: 1px solid white;
+        outline: none;
+        color: white;
+        background-color: transparent;
+        position: fixed;
+        left: 0%;
+        font-weight: bold;
+        letter-spacing: 5px;
+        font-size: 30px;
+        right: 0%;
+        z-index: 15;
+        top: 200px;
+        overflow: hidden;
+    }
+    #ss{
+        height: 40px;
+        border: 1px solid white;
+        outline: none;
+        color: white;
+        background-color: transparent;
+        position: fixed;
+        left: 0%;
+        font-weight: bold;
+        letter-spacing: 5px;
+        font-size: 30px;
+        right: 0%;
+        z-index: 15;
+        top: 280px;
+        overflow: hidden;
+    }
+    #rangeRun,
+    #rangeB,
+    #mS,
+    #rs{
+        width: 100%;
+    }
+    #runEdit{
+        background-color: rgb(255 255 255 / 0.3);
+        position: fixed;
+        top: 0%;
+        right: 0%;
+        bottom: 0%;
+        backdrop-filter: blur(3px);
+        left: 0%;
+        display: none;
+    }
+    #mmm{
+        width: 500px;
+        border-radius: 5px;
+        background-color: transparent;
+        padding: 10px;
+        text-align: left;
+        border: 1px solid gray;
+        z-index: 6;
+        box-shadow: 0 0 3px gray;
+    }
+    span{
+        margin-top: 10px;
+        color: white;
+        text-shadow: 1px 2px 3px #000000;
+    }
+    #backB5{
+        background-color: transparent;
+        color: transparent;
+        border: none;
+        top: 0%;
+        right: 0%;
+        z-index: 5;
+        left: 0%;
+        bottom: 0%;
+        position: fixed;
+    }
+    #njn{
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        height: 100vh;
+    }
+    #changeBg,
+    #reset{
+      background-color: transparent;
+      color: white;
+      width: 49%;
+      font-size: 20px;
+      padding: 10px;
+      transition: 1s;
+      border: 2px solid white;
+      border-radius: 4px;
+    }
+    #hj{
+      text-shadow: 1px 2px 3px #000000;
+    }
+    i{
+      color: white;
+      text-shadow: none;
+    }
+    #k{
+      color: transparent;
+      text-shadow: none;
+    }
+    #footer{
+      position: fixed;
+      left: 0%;
+      overflow: scroll;
+      right: 0%;
+      bottom: 0%;
+      z-index: 3;
+      background-color: #333333;
+      height: 70px;
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
+      align-items: center;
+    }
+    .mn{
+      height: 70px;
+      background-color: transparent;
+      border-radius: 1px;
+      border: none;
+      font-size: 30px;
+      color: white;
+    }
+    #mp:active{
+      transform: scale(0.95);
+      color: Blue;
+    }
+    #search{
+      width: 90%;
+      height: 20px;
+      border: none;
+      transition: 1s;
+      outline: none;
+      font-size: 17px;
+      color: white;
+      background-color: transparent;
+      border-bottom: 1px solid white;
+    }
+    #search:hover{
+      border-bottom: 1px solid blue;
+    }
+    #pup{
+      display: none;
+    }
+    #lic{
+      z-index: 15;
+      justify-content: center;
+      align-items: center;
+      background-color: transparent;
+      text-align: center;
+      height: 100vh;
+      position: fixed;
+      top: 0%;
+      right: 0%;
+      left: 0%;
+      bottom: 0%;
+      backdrop-filter: blur(4px);
+      text-align: center;
+      display: flex;
+    }
+    #inf{
+      width: 400px;
+      height: 200px;
+      box-shadow: 0 0 3px;
+      padding: 10px;
+      background-color: #00000061;
+    }
+    #search-button{
+      width: 300px;
+      height: 30px;
+      color: white;
+      border: 1px solid blue;
+      margin-top: 100px;
+      background: transparent;
+      font-weight: bold;
+      font-size: 25px;
+    }
+    </style>
+    </head>
+    <body>
+      <header id="header">
+          <button id="should" onclick="should ()">
+              <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+          </button>
+        <div id="showSettings">
+            <button id="upload" class="allBtn"><i class="fa fa-file-code" id="flex"></i >Upload Html file</button>
+            <input type="file" id="fileInput" onchange="fileInput()" accept=".html" class="allBtn">
+            <button id="clear" class="allBtn">Remove Data<i class="fa fa-minus-square" aria-hidden="true" id="removeIcon"></i></button>
+          <select id="theme-select" class="allBtn">
+              <option value="">Themes</option>
+              <option value="chrome">Chrome</option>
+              <option value="nord_dark">Nord Dark</option>
+               <option value="github">GitHub</option>
+               <option value="terminal">Terminal</option>
+               <option value="tomorrow_night">Tomorrow Night</option>
+               <option value="tomorrow_night_blue">Tomorrow Night Blue</option>
+               <option value="tomorrow_night_bright">Tomorrow Night Bright</option>
+               <option value="monokai">Monokai</option>
+               <option value="one_dark">One Dark</option>
+               <option value="ambiance">Ambiance</option>
+               <option value="dracula">Dracula</option>
+               <option value="chaos">Chaos</option>
+               <option value="github_dark">GitHub Dark</option>
+               <option value="cobalt">Cobalt</option>
+               <option value="gruvbox">Gruvbox</option>
+               <option value="clouds">Clouds</option>
+               <option value="crimson_editor">Crimson Editor</option>
+               <option value="dawn">Dawn</option>
+               <option value="dreamweaver">Dreamweaver</option>
+               <option value="eclipse">Eclipse</option>
+               <option value="iplastic">iPlastic</option>
+               <option value="solarized_light">Solarized Light</option>
+               <option value="textmate">TextMate</option>
+               <option value="xcode">XCode</option>
+           </select>
+           <button id="other" class="allBtn"
+           onclick="other()">Settings<i class="fa
+           fa-cog" id="cog"></i></button>
+        </div>
+      </header>
+        <button id="runBtn" onclick="runBtn()"><i class="fa fa-play" id="hj"></i></button>
+      <div id="header2">
+          <button id="back" onclick="back()"><i class="fa fa-arrow-left"></i></button>
+        </div>
+        <div id="otherSettings">
+            <button id="backbtn2" onclick="backbtn2()"><i class="fa fa-arrow-left"></i></button>
+            <hr>
+            <button id="showFonts" onclick="showFonts()" class="inSettings">Font Size<br><span id="display2">12px</span></button>
+            <div id="me">
+                <button id="backbtn3" onclick="backbtn3()"><i class="fa fa-arrow-left"></i></button>
+                <div class="zoom2">
+                <div id="zoom">
+                <div id="span">
+                <span id="display">Font Size: 12px</span>
+                </div>
+                <div id="types">
+                <span id="none">8</span>
+                <input type="range" id="range" oninput="rangeSize()" min="8" max="25" value="12">
+                <span id="none">25</span>
+            </div>
+            </div>
+            </div>
+            </div>
+            <button id="custom" onclick="custom()">Custom Edit<br><span id="cz">Default</span></button>
+            <div id="runEdit">
+                <button id="backB5" onclick="backB5()"><i class="fa fa-arrow-left" id="k"></i></button>
+                <div id="njn">
+                    <div id="mmm">
+                    <span id="spanD">Bottom to Top: 5%</span>
+                    <input type="range" id="rangeRun" oninput="rangeRun()" min="1" max="95" value="5">
+                    <span id="spanX">Right to Left: 3%</span>
+                    <input type="range" id="mS" max="87" min="3" value="3" oninput="mCi()">
+                    <span id="size">Size: 70px</span>
+                    <input type="range" oninput="rSize2()" id="rs" value="40" min="40" max="100">
+                    <span id="mns">background color: gold</span><br><br>
+                    <button id="changeBg">Change</button>
+                    <button id="reset" onclick="reset()">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      <div id="editor"></div>
+      <footer id="footer">
+        <button id="undo" class="mn"><i class="fa fa-undo" id="mp"></i></button>
+        <button id="redo" class="mn">
+          <i class="fas fa-redo" id="mp"></i>
+        </button>
+        <button id="copy" class="mn">
+          <i class="fa fa-copy" id="mp"></i>
+          </button>
+        <button id="arrowUp" class="mn">
+          <i class="fa fa-arrow-up" id="mp"></i>
+        </button>
+        <button id="arrowDown" class="mn">
+          <i class="fa fa-arrow-down" id="mp"></i>
+        </button>
+        <button id="showSearch" class="mn" onclick="showSearch()">
+          <i class="fa fa-search" id="mp"></i>
+        </button>
+        <button id="mp"  class="mn" onclick="appendValue('<')"> &lt; </button>
+        <button  id="mp" class="mn" onclick="appendValue('>')"> &gt; </button>
+        <button  id="mp" class="mn" onclick="appendValue('{')"> { </button>
+        <button  id="mp" class="mn" onclick="appendValue('}')"> } </button>
+        <button  id="mp" class="mn" onclick="appendValue('/')"> / </button>
+        <button id="mp"  class="mn" onclick="appendValue(':')"> : </button>
+        <button id="mp"  class="mn" onclick="appendValue('\'')"> ' </button>
+        <button  id="mp" class="mn" onclick="appendValue('&quot;')"> " </button>
+        <button id="mp"  class="mn" onclick="appendValue('(')"> ( </button>
+        <button  id="mp" class="mn" onclick="appendValue(')')"> ) </button>
+        <button  id="mp" class="mn" onclick="appendValue('=')"> = </button>
+        <button  id="mp" class="mn" onclick="appendValue('%')"> % </button>
+        <button  id="mp" class="mn" onclick="appendValue('#')"> # </button>
+        <button  id="mp" class="mn" onclick="appendValue('@')"> @ </button>
+        <button  id="mp" class="mn" onclick="appendValue('-')"> - </button>
+        <button  id="mp" class="mn" onclick="appendValue('+')"> + </button>
+        <button  id="mp" class="mn" onclick="appendValue('?')"> ? </button>
+        <button id="mp" class="mn" onclick="appendValue('!')"> ! </button>
+      </footer>
+      <div id="pup">
+        <div id="lic">
+          <div id="inf">
+          <input type="text" id="search" class="form-control" placeholder="Search...">
+          <button id="search-button">Ok</button>
+        </div>
+        </div>
+      </div>
+      <iframe id="preview"></iframe>
+      <script>
+    let htmlEditor = ace.edit("editor");
+    htmlEditor.setTheme("ace/theme/nord_dark");
+    htmlEditor.session.setMode("ace/mode/html");
+    htmlEditor.setOptions({
+        autoScrollEditorIntoView: true,
+        enableBasicAutocompletion: true,
+        useWorker: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true,
+        showInvisibles: true,
+        showPrintMargin: true,
+        displayIndentGuides: true,
+        fontSize: "25px",
+    });
+    htmlEditor.setOption("wrap", true);
+    let removeAllButton = document.getElementById("clear");
+    removeAllButton.addEventListener("click", clearHistory);
+    function clearHistory() {
+        localStorage.removeItem('code');
+        htmlEditor.setValue('');
+    }
+</script>
+<script>
+    let w = ace.edit("editor");
+    function updateLocalStorage() {
+        let htmlCode = w.getValue();
+        let codeToSave = JSON.stringify({ htmlCode });
+        localStorage.setItem('code', codeToSave);
+    }
+    w.session.on("change", updateLocalStorage);
+    let savedCode = localStorage.getItem('code');
+    if (savedCode) {
+        const { htmlCode } = JSON.parse(savedCode);
+        w.setValue(htmlCode);
+    }
+</script>
+      <script>
+        function back () {
+          var preview = document.getElementById('preview');
+          var editor = document.getElementById('editor');
+          var header = document.getElementById('header');
+          var runBtn = document.getElementById('runBtn');
+          var back = document.getElementById('header2');
+          var footer = document.getElementById('footer');
+          footer.style.display  = 'block';
+          preview.style.display  = 'none';
+          editor.style.display = 'block';
+          back.style.display = 'none';
+          runBtn.style.display = 'block';
+          header.style.display = 'block';
+        }
+      </script>
+      <script>
+      window.onload = function () {
+      var editor = ace.edit("editor");
+      var fileInput = document.getElementById('fileInput');
+      fileInput.onchange = function () {
+        var file = fileInput.files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          var contents = e.target.result;
+          editor.setValue(contents);
+        };
+        reader.readAsText(file);
+      };
+    };
+    </script>
+      <script>
+          function should () {
+              var should = document.getElementById('showSettings');
+              var button = document.getElementById('should');
+              if (should.style.display === 'block') {
+                  should.style.display = 'none';
+              } else {
+                  should.style.display = 'block';
+              }
+              if (button.innerHTML === '<i class="fa fa-times-circle" aria-hidden="true"></i>') {
+                  button.innerHTML = '<i class="fa fa-ellipsis-v" aria-hidden="true"></i>';
+              } else {
+                  button.innerHTML = '<i class="fa fa-times-circle" aria-hidden="true"></i>';
+              }
+          }
+      </script>
+      <script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/chrome");
+    editor.session.setMode("ace/mode/html");
+    var themeSelect = document.getElementById("theme-select");
+    var savedTheme = localStorage.getItem("editorTheme");
+    if (savedTheme) {
+      editor.setTheme("ace/theme/" + savedTheme);
+      themeSelect.value = savedTheme;
+    }
+    themeSelect.addEventListener("change", function() {
+      var selectedTheme = themeSelect.value;
+      editor.setTheme("ace/theme/" + selectedTheme);
+      localStorage.setItem("editorTheme", selectedTheme);
+    });
+  </script>
+      <script>
+          function rangeSize () {
+              var editor = document.getElementById('editor');
+              var range = document.getElementById('range').value;
+              var display = document.getElementById('display');
+              editor.style.fontSize = range + 'px';
+              display.innerText = 'Font Size: ' + range + 'px';
+              localStorage.setItem('fontSize', range);
+          }
+          var fontSize = localStorage.getItem('fontSize');
+          if (fontSize) {
+              document.getElementById('editor').style.fontSize = fontSize + 'px';
+              document.getElementById('range').value = fontSize;
+              document.getElementById('display').innerText = 'Font Size: ' + fontSize + 'px';
+              document.getElementById('display2').innerText = fontSize + 'px';
+          }
+      </script>
+      <script>
+          function other () {
+              var other = document.getElementById('otherSettings');
+              other.style.display = 'block';
+          }
+          function backbtn3 () {
+              var me = document.getElementById('me');
+              var range = document.getElementById('range').value;
+              var display = document.getElementById('display2').innerText = range + 'px';
+              me.style.display = 'none';
+          }
+          function backbtn2 () {
+              var you = document.getElementById('otherSettings');
+              you.style.display = 'none';
+          }
+      </script>
+      <script>
+          function rangeRun () {
+              var runBtn = document.getElementById('runBtn');
+              var rangeRun = document.getElementById('rangeRun').value;
+              var spanD = document.getElementById('spanD').innerText = 'Bottom to Top: ' + rangeRun + '%';
+              runBtn.style.bottom = rangeRun + "%";
+              localStorage.setItem('rage', rangeRun)
+          }
+          var right = localStorage.getItem('rage');
+          var gbb = document.getElementById('runBtn');
+          gbb.style.bottom = right + '%';
+          gbb.style.zIndex = '11';
+          document.getElementById('rangeRun').value = right;
+          document.getElementById('spanD').innerText = 'Bottom to Top: ' + right + '%';
+      </script>
+      <script>
+          function custom () {
+              var gg = document.getElementById('runEdit').style.display = 'block';
+              document.getElementById('runBtn').style.zIndex = '20';
+          }
+          function backB5 () {
+              var g = document.getElementById('runEdit').style.display = 'none';
+              document.getElementById('runBtn').style.zIndex = '11';
+          }
+      </script>
+      <script>
+          function mCi () {
+              var mn = document.getElementById('mS').value;
+              var runBtn = document.getElementById('runBtn');
+              var spanX = document.getElementById('spanX');
+              runBtn.style.right = mn + '%';
+              spanX.innerText = 'Right to Left: ' + mn + '%';
+              localStorage.setItem('bay', mn);
+          }
+          var gh = localStorage.getItem('bay');
+          document.getElementById('mS').value = gh;
+          document.getElementById('runBtn').style.right = gh + '%';
+          document.getElementById('spanX').innerText = 'Right to Left: ' + gh + '%';
+      </script>
+      <script>
+          function rSize2 () {
+              var rSize2 = document.getElementById('rs').value;
+              var rnn = document.getElementById('runBtn');
+              var spanZ = document.getElementById('size');
+              spanZ.innerText = 'Size: ' + rSize2 + 'px';
+              rnn.style.width = rSize2 + 'px';
+              rnn.style.height = rSize2 + 'px';
+              localStorage.setItem('cvc', rSize2);
+          }
+          var h = localStorage.getItem('cvc');
+          document.getElementById('rs').value = h;
+          document.getElementById('size').innerText = 'Size: ' + h + 'px';
+          var rh = document.getElementById('runBtn');
+          rh.style.width = h + 'px';
+          rh.style.height = h + 'px';
+      </script>
+      <script>
+    function runBtn() {
+        var preview = document.getElementById('preview');
+        var editor = document.getElementById('editor');
+        var header = document.getElementById('header');
+        var runBtn = document.getElementById('runBtn');
+        var back = document.getElementById('header2');
+        var footer = document.getElementById('footer');
+        footer.style.display = 'none';
+        preview.style.display = 'block';
+        preview.style.width = '100%';
+        preview.style.height = '100%';
+        preview.style.top = '30px';
+        back.style.display = 'block';
+        editor.style.display = 'none';
+        runBtn.style.display = 'none';
+        header.style.display = 'none';
+        let htmlCode = htmlEditor.getValue();
+        let previewFrame = document.getElementById('preview');
+        let previewDocument = previewFrame.contentDocument || previewFrame.contentWindow.document;
+
+        previewDocument.open();
+        previewDocument.write(htmlCode);
+        previewDocument.close();
+    }
+    </script>
+    <script>
+    const changeBg = document.getElementById("changeBg");
+    const mns = document.getElementById("mns");
+    changeBg.addEventListener("click", () => {
+      const color = generateRandomColor();
+      var gj = document.getElementById('runBtn');
+      var reset = document.getElementById('reset');
+      changeBg.style.border = '1px solid ' + color;
+      reset.style.border = '1px solid ' + color;
+      gj.style.border = '1px solid' + color;
+      gj.style.backgroundColor = color;
+      mns.innerText = 'background color: ' + color;
+      localStorage.setItem('myn', color);
+    });
+    function generateRandomColor() {
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+    var gc = localStorage.getItem('myn');
+    var hj = document.getElementById('runBtn');
+    var kj = document.getElementById('mns');
+    var chan = document.getElementById('changeBg');
+    var res = document.getElementById('reset');
+    hj.style.backgroundColor = gc;
+    hj.style.border = '1px solid ' + gc;
+    kj.innerText = 'background color: ' + gc;
+    chan.style.border = '1px solid ' + gc;
+    res.style.border = '1px solid ' + gc;
+    </script>
+    <script>
+      function reset () {
+        var fme = document.getElementById('reset');
+        var tg = document.getElementById('changeBg');
+        var runBtn = document.getElementById('runBtn');
+        runBtn.style.backgroundColor = 'gold';
+        runBtn.style.border = '1px solid gold';
+        tg.style.border = '1px solid gold';
+        fme.style.border = '1px solid gold';
+        localStorage.setItem('gold', runBtn);
+      }
+      var jh = localStorage.getItem('gold');
+      var kl = document.getElementById('runBtn');
+      var m = document.getElementById('reset');
+      var mo = document.getElementById('changeBg');
+      kl.style.backgroundColor = jh;
+      kl.style.border = '1px solid ' + jh;
+      m.style.border = '1px solid ' + jh;
+      mo.style.border = '1px solid ' + jh;
+    </script>
+    <script>
+      let yaab = ace.edit('editor');
+      document.getElementById('undo').addEventListener('click', function() {
+        yaab.undo();
+        yaab.focus();
+      });
+      document.getElementById('redo').addEventListener('click', function() {
+        yaab.redo();
+        yaab.focus();
+      });
+      document.getElementById('arrowUp').addEventListener('click', function() {
+        let currentPosition = yaab.getCursorPosition();
+        let currentLine = yaab.session.getLine(currentPosition.row);
+        yaab.session.insert({ row: currentPosition.row - 1, column: 0 }, currentLine + '\n');
+        yaab.moveCursorTo(currentPosition.row - 1, currentPosition.column);
+        yaab.focus();
+      });
+      document.getElementById('arrowDown').addEventListener('click', function() {
+        let currentPosition = yaab.getCursorPosition();
+        let currentLine = yaab.session.getLine(currentPosition.row);
+        yaab.session.insert({ row: currentPosition.row + 1, column: 0 }, currentLine + '\n');
+        yaab.moveCursorTo(currentPosition.row + 1, currentPosition.column);
+        yaab.focus();
+      });
+      var copyButton = document.getElementById("copy");
+        copyButton.addEventListener("click", function() {
+            var htmlContent = yaab.getValue();
+            var textarea = document.createElement("textarea");
+            textarea.value = htmlContent;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+            yaab.focus();
+        });
+    </script>
+    <script>
+    var editor = ace.edit("editor");
+    var searchButton = document.getElementById('search-button');
+    searchButton.addEventListener('click', function() {
+      var searchValue = document.getElementById('search').value;
+      var ge = document.getElementById('pup');
+      ge.style.display = 'none';
+      var range = editor.find(searchValue, {
+        wrap: true,
+        caseSensitive: false,
+        wholeWord: false,
+        regExp: false,
+      });
+      if (range) {
+        editor.selection.setRange(range);
+        editor.scrollToLine(range.start.row, true, true, function () {});
+      }
+    });
+    </script>
+    <script>
+    var editor = ace.edit("editor");
+    function appendValue(value) {
+      editor.insert(value);
+      editor.focus();
+    }
+      function showSearch () {
+        var pup = document.getElementById('pup');
+        pup.style.display = 'block';
+      }
+      function showFonts () {
+        var m = document.getElementById('me').style.display = 'block';
+      }
+</script>
+    </body>
+</html>
